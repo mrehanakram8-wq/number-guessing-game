@@ -7,18 +7,18 @@ SECRET_NUMBER=$(( RANDOM % 1000 + 1 ))
 echo "Enter your username:"
 read USERNAME
 
-USER_ID=$($PSQL "SELECT user_id FROM users WHERE username='$USERNAME';")
+USER_ID=$($PSQL "SELECT user_id FROM users WHERE username='$USERNAME';" | xargs)
 
 if [[ -z $USER_ID ]]
 then
   $PSQL "INSERT INTO users(username) VALUES('$USERNAME');"
-  USER_ID=$($PSQL "SELECT user_id FROM users WHERE username='$USERNAME';")
+  USER_ID=$($PSQL "SELECT user_id FROM users WHERE username='$USERNAME';" | xargs)
   echo "Welcome, $USERNAME! It looks like this is your first time here."
 else
-  GAMES_PLAYED=$($PSQL "SELECT COUNT(*) FROM games WHERE user_id=$USER_ID;")
-  BEST_GAME=$($PSQL "SELECT MIN(number_of_guesses) FROM games WHERE user_id=$USER_ID;")
+  GAMES_PLAYED=$($PSQL "SELECT COUNT(*) FROM games WHERE user_id=$USER_ID;" | xargs)
+  BEST_GAME=$($PSQL "SELECT MIN(number_of_guesses) FROM games WHERE user_id=$USER_ID;" | xargs)
   
-  if [[ -z $BEST_GAME ]]
+  if [[ -z $BEST_GAME || $BEST_GAME == "" ]]
   then
     BEST_GAME=0
   fi
