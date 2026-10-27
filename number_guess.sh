@@ -7,22 +7,17 @@ SECRET_NUMBER=$(( RANDOM % 1000 + 1 ))
 echo "Enter your username:"
 read USERNAME
 
-USER_ID=$($PSQL "SELECT user_id FROM users WHERE username='$USERNAME';" | xargs)
+USER_ID=$($PSQL "SELECT user_id FROM users WHERE username='$USERNAME';")
 
 if [[ -z $USER_ID ]]
 then
-  $PSQL "INSERT INTO users(username) VALUES('$USERNAME');"
-  USER_ID=$($PSQL "SELECT user_id FROM users WHERE username='$USERNAME';" | xargs)
+  INSERT_USER_RESULT=$($PSQL "INSERT INTO users(username) VALUES('$USERNAME');")
+  USER_ID=$($PSQL "SELECT user_id FROM users WHERE username='$USERNAME';")
   echo "Welcome, $USERNAME! It looks like this is your first time here."
 else
-  GAMES_PLAYED=$($PSQL "SELECT COUNT(*) FROM games WHERE user_id=$USER_ID;" | xargs)
-  BEST_GAME=$($PSQL "SELECT MIN(number_of_guesses) FROM games WHERE user_id=$USER_ID;" | xargs)
+  GAMES_PLAYED=$($PSQL "SELECT COUNT(*) FROM games WHERE user_id=$USER_ID;")
+  BEST_GAME=$($PSQL "SELECT MIN(number_of_guesses) FROM games WHERE user_id=$USER_ID;")
   
-  if [[ -z $BEST_GAME || $BEST_GAME == "" ]]
-  then
-    BEST_GAME=0
-  fi
-
   echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
 fi
 
@@ -47,6 +42,6 @@ do
   ((NUMBER_OF_GUESSES++))
 done
 
-$PSQL "INSERT INTO games(user_id, number_of_guesses) VALUES($USER_ID, $NUMBER_OF_GUESSES);"
+INSERT_GAME_RESULT=$($PSQL "INSERT INTO games(user_id, number_of_guesses) VALUES($USER_ID, $NUMBER_OF_GUESSES);")
 
 echo "You guessed it in $NUMBER_OF_GUESSES tries. The secret number was $SECRET_NUMBER. Nice job!"
