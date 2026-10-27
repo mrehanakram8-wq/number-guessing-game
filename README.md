@@ -8,3 +8,8 @@ A Bash number guessing game using PostgreSQL.
 
 The game generates a random number between 1 and 1000.
 Usernames and game statistics are stored in PostgreSQL.
+
+## Database Tables
+
+- users: stores usernames.
+- games: stores completed game statistics.
